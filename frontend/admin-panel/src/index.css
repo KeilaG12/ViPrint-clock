@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* /frontend/admin-panel/src/index.css */
+
+/* Reinicio básico */
+body {
+  margin: 0; /* Elimina el margen predeterminado del navegador */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f4f9; /* Color de fondo claro para el cuerpo */
+}
+
+/* Estilos para el contenedor principal de React */
+#root {
+  min-height: 100vh; /* Asegura que el contenedor ocupe toda la altura */
+  display: flex;
+  flex-direction: column; /* Para que la Navbar se quede arriba */
+}
+
+/* Estilos para el elemento NAV de tu Navbar.js */
+nav {
+  /* No es necesario tocar aquí si usas estilos en línea, pero ayuda a debuggear */
+  z-index: 1000; /* Asegura que esté por encima de cualquier otro elemento */
+}
