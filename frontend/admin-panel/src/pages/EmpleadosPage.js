@@ -1,11 +1,11 @@
-// /frontend/admin-panel/src/pages/EmpleadosPage.js
 import React, { useState, useEffect } from 'react';
 import { getEmpleados, createEmpleado, deleteEmpleado } from '../api/empleadoAPI';
+import { Container, Form, Button, Table, Alert, Card, Row, Col } from 'react-bootstrap';
 
 const EmpleadosPage = () => {
   const [empleados, setEmpleados] = useState([]);
   const [formData, setFormData] = useState({ nombre: '', puesto: '', rfidUID: '', fechaIngreso: '' });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     fetchEmpleados();
@@ -26,72 +26,102 @@ const EmpleadosPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
+    setMessage(null);
     try {
       await createEmpleado(formData);
       setFormData({ nombre: '', puesto: '', rfidUID: '', fechaIngreso: '' });
       fetchEmpleados();
-      setMessage('✅ Empleado registrado con éxito.');
+      setMessage({ type: 'success', text: '✅ Empleado registrado con éxito.' });
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error de conexión o UID duplicado.';
-      setMessage(`❌ Error al registrar: ${errorMsg}`);
+      setMessage({ type: 'danger', text: `❌ Error al registrar: ${errorMsg}` });
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar este empleado?')) {
+    if (window.confirm('¿Estás seguro de eliminar este empleado? Esta acción no se puede deshacer.')) {
       try {
         await deleteEmpleado(id);
         fetchEmpleados();
-        setMessage('🗑️ Empleado eliminado.');
+        setMessage({ type: 'warning', text: '🗑️ Empleado eliminado.' });
       } catch (error) {
-        setMessage('❌ Error al eliminar el empleado.');
+        setMessage({ type: 'danger', text: '❌ Error al eliminar el empleado.' });
       }
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>👥 Gestión de Empleados</h2>
+    <Container className="my-4">
+      <h2 className="mb-4">👥 Gestión de Empleados</h2>
       <hr />
-      {message && <p style={{ color: message.startsWith('❌') ? 'red' : 'green' }}>{message}</p>}
+
+      {message && <Alert variant={message.type}>{message.text}</Alert>}
 
       {/* Formulario de Creación */}
-      <h3>➕ Registrar Nuevo Empleado</h3>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', maxWidth: '600px', marginBottom: '30px' }}>
-        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" required />
-        <input type="text" name="puesto" value={formData.puesto} onChange={handleChange} placeholder="Puesto" />
-        <input type="text" name="rfidUID" value={formData.rfidUID} onChange={handleChange} placeholder="RFID UID" required />
-        <input type="date" name="fechaIngreso" value={formData.fechaIngreso} onChange={handleChange} placeholder="Fecha de Ingreso" />
-        <button type="submit" style={{ gridColumn: 'span 2', padding: '10px' }}>Registrar</button>
-      </form>
+      <Card className="mb-4 shadow-sm">
+        <Card.Header as="h5">➕ Registrar Nuevo Empleado</Card.Header>
+        <Card.Body>
+          <Form onSubmit={handleSubmit}>
+            <Row className="mb-3">
+              <Form.Group as={Col}>
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>Puesto</Form.Label>
+                <Form.Control type="text" name="puesto" value={formData.puesto} onChange={handleChange} />
+              </Form.Group>
+            </Row>
+
+            <Row className="mb-3">
+              <Form.Group as={Col}>
+                <Form.Label>RFID UID</Form.Label>
+                <Form.Control type="text" name="rfidUID" value={formData.rfidUID} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>Fecha de Ingreso</Form.Label>
+                <Form.Control type="date" name="fechaIngreso" value={formData.fechaIngreso} onChange={handleChange} />
+              </Form.Group>
+            </Row>
+
+            <Button variant="primary" type="submit" className="w-100">
+              Registrar Empleado
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
 
       {/* Lista de Empleados */}
-      <h3>Lista ({empleados.length})</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#eee' }}>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Nombre</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Puesto</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>RFID UID</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {empleados.map(emp => (
-            <tr key={emp.id}>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{emp.nombre}</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{emp.puesto}</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{emp.rfidUID}</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                <button onClick={() => handleDelete(emp.id)} style={{ background: 'red', color: 'white', border: 'none', padding: '5px 10px' }}>Eliminar</button>
-                {/* Aquí puedes agregar un botón para "Editar" */}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <Card className="shadow-sm">
+        <Card.Header as="h5">Lista de Empleados ({empleados.length})</Card.Header>
+        <Card.Body>
+          <Table striped bordered hover responsive size="sm">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Fecha Ingreso</th>
+                <th>RFID UID</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {empleados.map(emp => (
+                <tr key={emp.id}>
+                  <td>{emp.nombre}</td>
+                  <td>{emp.puesto}</td>
+                  <td>{emp.fechaIngreso}</td>
+                  <td>{emp.rfidUID}</td>
+                  <td>
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(emp.id)}>Eliminar</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

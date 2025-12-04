@@ -1,21 +1,46 @@
-// /frontend/admin-panel/src/components/Navbar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+// 1. IMPORTAR EL LOGO
+import ViPrintLogo from '../assets/logo vip.png'; 
 
-const Navbar = () => {
+const AppNavbar = () => {
   return (
-    <nav style={{ padding: '10px 20px', background: '#333', color: 'white' }}>
-      <Link to="/" style={{ color: 'white', marginRight: '15px', textDecoration: 'none' }}>
-        🏠 Dashboard
-      </Link>
-      <Link to="/empleados" style={{ color: 'white', marginRight: '15px', textDecoration: 'none' }}>
-        👥 Gestión de Empleados
-      </Link>
-      <Link to="/checadas" style={{ color: 'white', textDecoration: 'none' }}>
-        ⏱️ Historial de Checadas
-      </Link>
-    </nav>
+    <Navbar bg="dark" variant="dark" expand="lg">
+      <Container>
+        {/* 2. USAR EL LOGO EN EL BRAND */}
+        <Navbar.Brand>
+            <img
+                src={ViPrintLogo}
+                alt="ViPrint Publicidad Logo"
+                height="30" // Define la altura (puedes ajustarla)
+                className="d-inline-block align-top me-2" // d-inline-block y espacio a la derecha
+            />
+            Checador Admin
+        </Navbar.Brand>
+        
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            
+            <LinkContainer to="/">
+              <Nav.Link>🏠 Dashboard</Nav.Link>
+            </LinkContainer>
+            
+            <LinkContainer to="/empleados">
+              <Nav.Link>👥 Gestión de Empleados</Nav.Link>
+            </LinkContainer>
+            
+            <LinkContainer to="/checadas">
+              <Nav.Link>⏱️ Historial de Checadas</Nav.Link>
+            </LinkContainer>
+            
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 
-export default Navbar;
+// Recuerda renombrar la exportación para evitar conflictos si usaste AppNavbar en App.js
+export default AppNavbar;

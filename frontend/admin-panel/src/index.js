@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+// Importación de Bootstrap (antes que tus estilos)
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// ... el resto del código permanece igual
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -1,74 +1,89 @@
-// /frontend/admin-panel/src/pages/ChecadasPage.js
 import React, { useState, useEffect } from 'react';
 import { getChecadas } from '../api/checadaAPI';
+import { Container, Table, Button, Alert } from 'react-bootstrap';
 import moment from 'moment';
-import 'moment/locale/es'; // Para asegurar el idioma español en fechas
+import 'moment/locale/es'; 
 
 const ChecadasPage = () => {
   const [checadas, setChecadas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    moment.locale('es'); // Establecer idioma español
+    moment.locale('es'); 
     fetchChecadas();
   }, []);
 
   const fetchChecadas = async () => {
+    setLoading(true);
     try {
       const response = await getChecadas();
       setChecadas(response.data);
     } catch (error) {
       console.error('Error fetching checadas:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStyle = (incidencia) => {
-    if (incidencia) {
-      return { background: '#ffdddd', color: 'red', fontWeight: 'bold' };
-    }
-    if (incidencia === null) {
-      return { background: '#ddffdd', color: 'green' };
-    }
-    return {};
+  const getVariant = (incidencia) => {
+    if (incidencia) return 'table-danger'; // Fondo rojo para incidencias
+    if (incidencia === null) return 'table-success'; // Fondo verde para puntual
+    return ''; // Sin estilo si es neutro
   };
+
+  if (loading) {
+    return (
+      <Container className="my-4">
+        <Alert variant="info">Cargando historial de checadas...</Alert>
+      </Container>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>⏱️ Historial de Checadas e Incidencias</h2>
-      <button onClick={fetchChecadas} style={{ marginBottom: '15px' }}>
+    <Container className="my-4">
+      <h2 className="mb-4">⏱️ Historial de Checadas e Incidencias</h2>
+      <Button onClick={fetchChecadas} variant="info" className="mb-3">
         Actualizar Lista
-      </button>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#eee' }}>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Empleado</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Puesto</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Tipo</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Fecha y Hora</th>
-            <th style={{ border: '1px solid #ccc', padding: '8px' }}>Incidencia</th>
-          </tr>
-        </thead>
-        <tbody>
+      </Button>
+      
+      {checadas.length === 0 ? (
+        <Alert variant="warning">No hay registros de checadas en la base de datos.</Alert>
+      ) : (
+        <Table striped bordered hover responsive size="sm" className="shadow-sm">
+          <thead>
+            <tr className="table-dark">
+              <th>Empleado</th>
+              <th>Puesto</th>
+              <th>Tipo</th>
+              <th>Fecha y Hora</th>
+              <th>Incidencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            {checadas.map(ch => (
+              <tr key={ch.id} className={getVariant(ch.incidencia)}>
+                
+                {/* Solución al error 'undefined' con comprobación segura */}
+                <td>{ch.Empleado ? ch.Empleado.nombre : 'Empleado no encontrado'}</td>
+                <td>{ch.Empleado ? ch.Empleado.puesto : 'N/A'}</td>
 
-        {checadas.map(ch => (
-          <tr key={ch.id} style={getStyle(ch.incidencia)}>
-            
-            {/* 1. Usar comprobación condicional para 'nombre' */}
-            <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-              {ch.Empleado ? ch.Empleado.nombre : 'Empleado no encontrado'} 
-            </td>
-            
-            {/* 2. Usar comprobación condicional para 'puesto' */}
-            <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-              {ch.Empleado ? ch.Empleado.puesto : 'N/A'}
-            </td>
-            
-            <td style={{ border: '1px solid #ccc', padding: '8px' }}>{ch.tipo}</td>
-            {/* ... resto de las columnas ... */}
-          </tr>
-        ))}
-        </tbody>
-      </table>
-    </div>
+                <td>
+                  <span className={`badge ${ch.tipo === 'ENTRADA' ? 'bg-primary' : 'bg-secondary'}`}>
+                    {ch.tipo}
+                  </span>
+                </td>
+                <td>
+                  {moment(ch.horaChecada).format('DD/MM/YYYY hh:mm:ss A')} 
+                </td>
+                <td>
+                  {ch.incidencia || 'Puntual / Normal'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+    </Container>
   );
 };
 
