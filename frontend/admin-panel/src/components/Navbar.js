@@ -1,20 +1,22 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-// 1. IMPORTAR EL LOGO
+// Asegúrate de que esta ruta sea correcta para tu logo
 import ViPrintLogo from '../assets/logo vip.png'; 
 
 const AppNavbar = () => {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    // Clase 'custom-navbar' para el degradado y el tamaño
+    <Navbar bg="dark" variant="dark" expand="lg" className="custom-navbar p-3"> 
       <Container>
-        {/* 2. USAR EL LOGO EN EL BRAND */}
+        
+        {/* Marca de la Navbar con el Logo */}
         <Navbar.Brand>
             <img
                 src={ViPrintLogo}
                 alt="ViPrint Publicidad Logo"
-                height="30" // Define la altura (puedes ajustarla)
-                className="d-inline-block align-top me-2" // d-inline-block y espacio a la derecha
+                height="30" 
+                className="d-inline-block align-top me-2" 
             />
             Checador Admin
         </Navbar.Brand>
@@ -23,16 +25,19 @@ const AppNavbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             
+            {/* Los Nav.Link necesitan la clase 'flip-link' para el efecto */}
+            
             <LinkContainer to="/">
-              <Nav.Link>🏠 Dashboard</Nav.Link>
+              {/* Envolvemos el texto con un <span> para poder hacer el flip */}
+              <Nav.Link className="flip-link"><span>🏠 Dashboard</span></Nav.Link>
             </LinkContainer>
             
             <LinkContainer to="/empleados">
-              <Nav.Link>👥 Gestión de Empleados</Nav.Link>
+              <Nav.Link className="flip-link"><span>👥 Gestión de Empleados</span></Nav.Link>
             </LinkContainer>
             
             <LinkContainer to="/checadas">
-              <Nav.Link>⏱️ Historial de Checadas</Nav.Link>
+              <Nav.Link className="flip-link"><span>⏱️ Historial de Checadas</span></Nav.Link>
             </LinkContainer>
             
           </Nav>
@@ -42,5 +47,4 @@ const AppNavbar = () => {
   );
 };
 
-// Recuerda renombrar la exportación para evitar conflictos si usaste AppNavbar en App.js
 export default AppNavbar;
